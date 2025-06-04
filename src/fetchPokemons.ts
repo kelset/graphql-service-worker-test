@@ -1,5 +1,3 @@
-import { gql, request } from 'graffle'
-
 interface Species {
   name: string
   id: number
@@ -16,9 +14,7 @@ interface QueryResult {
   [key: string]: unknown
 }
 
-const endpoint = 'https://beta.pokeapi.co/graphql/v1beta'
-
-const query = gql`
+const query = `
   query bigPokeAPIquery {
     gen3_species: pokemon_v2_pokemonspecies(
       where: { pokemon_v2_generation: { name: { _eq: "generation-iii" } } }
@@ -96,14 +92,9 @@ export function setupFetchPokemons(
     render()
   })
 
-  button.addEventListener('click', async () => {
-    console.time('fetchPokemons')
-    output.textContent = 'Fetching...'
-    try {
-      const data = await request<QueryResult>({
-        url: endpoint,
-        document: query,
-      })
+  navigator.serviceWorker.addEventListener('message', (event) => {
+    if (event.data.type === 'GRAPHQL_RESPONSE') {
+      const data = event.data.payload as QueryResult
       console.timeEnd('fetchPokemons')
       species = data.gen3_species
       total = species.length
@@ -113,10 +104,21 @@ export function setupFetchPokemons(
         carousel.style.display = 'flex'
         render()
       }
-    } catch (err) {
+    } else if (event.data.type === 'GRAPHQL_ERROR') {
       output.textContent = 'Error fetching data'
-      console.error(err)
+      console.error(event.data.payload)
       console.timeEnd('fetchPokemons')
     }
+  })
+
+  button.addEventListener('click', async () => {
+    console.time('fetchPokemons')
+    output.textContent = 'Fetching...'
+    const registration = await navigator.serviceWorker.ready
+    registration.active?.postMessage({
+      type: 'GRAPHQL_FETCH',
+      query,
+      variables: {},
+    })
   })
 }
