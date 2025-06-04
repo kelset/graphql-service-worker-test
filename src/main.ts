@@ -1,30 +1,39 @@
 import './style.css'
-import typescriptLogo from './typescript.svg'
-import viteLogo from '/vite.svg'
 import { setupCounter } from './counter.ts'
 import { setupHeavyTask } from './heavyTask.ts'
 import { setupFetchPokemons } from './fetchPokemons.ts'
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-  <div>
-    <a href="https://vite.dev" target="_blank">
-      <img src="${viteLogo}" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://www.typescriptlang.org/" target="_blank">
-      <img src="${typescriptLogo}" class="logo vanilla" alt="TypeScript logo" />
-    </a>
-    <h1>Vite + TypeScript</h1>
-    <div class="card">
-      <button id="counter" type="button"></button>
-      <button id="heavy" type="button"></button>
-      <button id="fetch" type="button"></button>
-    </div>
-    <p class="read-the-docs">
-      Click on the Vite and TypeScript logos to learn more
-    </p>
+  <h1>GraphQL Service Worker Test</h1>
+  <div class="control">
+    <button id="counter" type="button">Increment</button>
+    <span id="counter-result"></span>
+  </div>
+  <div class="control">
+    <button id="heavy" type="button">Compute sum</button>
+    <span id="heavy-result"></span>
+  </div>
+  <div class="control">
+    <button id="fetch" type="button">Fetch Pokemon</button>
+    <span id="fetch-result"></span>
+  </div>
+  <div id="carousel" style="display:none;">
+    <button id="prev" type="button">&#9664;</button>
+    <span id="carousel-content"></span>
+    <button id="next" type="button">&#9654;</button>
   </div>
 `
 
-setupCounter(document.querySelector<HTMLButtonElement>('#counter')!)
-setupHeavyTask(document.querySelector<HTMLButtonElement>('#heavy')!)
-setupFetchPokemons(document.querySelector<HTMLButtonElement>('#fetch')!)
+setupCounter(
+  document.querySelector<HTMLButtonElement>('#counter')!,
+  document.querySelector<HTMLSpanElement>('#counter-result')!
+)
+setupHeavyTask(
+  document.querySelector<HTMLButtonElement>('#heavy')!,
+  document.querySelector<HTMLSpanElement>('#heavy-result')!
+)
+setupFetchPokemons(
+  document.querySelector<HTMLButtonElement>('#fetch')!,
+  document.querySelector<HTMLSpanElement>('#fetch-result')!,
+  document.querySelector<HTMLDivElement>('#carousel')!
+)

@@ -37,19 +37,65 @@ const query = gql`
   }
 `
 
-export function setupFetchPokemons(element: HTMLButtonElement) {
-  element.innerHTML = 'Fetch Pokemon'
-  element.addEventListener('click', async () => {
-    element.innerHTML = 'Fetching...'
+export function setupFetchPokemons(
+  button: HTMLButtonElement,
+  output: HTMLElement,
+  carousel: HTMLDivElement
+) {
+  const prev = carousel.querySelector<HTMLButtonElement>('#prev')!
+  const next = carousel.querySelector<HTMLButtonElement>('#next')!
+  const content = carousel.querySelector<HTMLSpanElement>('#carousel-content')!
+
+  button.textContent = 'Fetch Pokemon'
+
+  let species: Species[] = []
+  let total = 0
+  let index = 0
+
+  const render = () => {
+    if (!species.length) return
+    const s = species[index]
+    content.textContent = `${s.name} (#${s.id})`
+    if (index === Math.min(species.length, 10) - 1 && total > 10) {
+      content.textContent += ` ...and ${total - 10} more`
+    }
+  }
+
+  prev.addEventListener('click', () => {
+    if (!species.length) return
+    const max = Math.min(species.length, 10)
+    index = (index - 1 + max) % max
+    render()
+  })
+
+  next.addEventListener('click', () => {
+    if (!species.length) return
+    const max = Math.min(species.length, 10)
+    index = (index + 1) % max
+    render()
+  })
+
+  button.addEventListener('click', async () => {
+    console.time('fetchPokemons')
+    output.textContent = 'Fetching...'
     try {
       const data = await request<QueryResult>({
         url: endpoint,
         document: query,
       })
-      element.innerHTML = `Fetched ${data.gen3_species.length} pokemon`
+      console.timeEnd('fetchPokemons')
+      species = data.gen3_species
+      total = species.length
+      output.textContent = `Fetched ${total} pokemon`
+      if (species.length) {
+        index = 0
+        carousel.style.display = 'flex'
+        render()
+      }
     } catch (err) {
-      element.innerHTML = 'Error fetching data'
+      output.textContent = 'Error fetching data'
       console.error(err)
+      console.timeEnd('fetchPokemons')
     }
   })
 }
