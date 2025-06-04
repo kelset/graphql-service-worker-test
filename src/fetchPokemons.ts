@@ -95,6 +95,7 @@ export function setupFetchPokemons(
   navigator.serviceWorker.addEventListener('message', (event) => {
     if (event.data.type === 'GRAPHQL_RESPONSE') {
       const data = event.data.payload as QueryResult
+      console.log('[main] received response', data)
       console.timeEnd('fetchPokemons')
       species = data.gen3_species
       total = species.length
@@ -106,15 +107,17 @@ export function setupFetchPokemons(
       }
     } else if (event.data.type === 'GRAPHQL_ERROR') {
       output.textContent = 'Error fetching data'
-      console.error(event.data.payload)
+      console.error('[main] GraphQL error', event.data.payload)
       console.timeEnd('fetchPokemons')
     }
   })
 
   button.addEventListener('click', async () => {
     console.time('fetchPokemons')
+    console.log('[main] sending query', { query })
     output.textContent = 'Fetching...'
     const registration = await navigator.serviceWorker.ready
+    console.log('[main] service worker ready', registration.active)
     registration.active?.postMessage({
       type: 'GRAPHQL_FETCH',
       query,
