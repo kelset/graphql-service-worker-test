@@ -1,4 +1,4 @@
-import { gql, request } from 'graffle'
+import { ApolloClient, InMemoryCache, gql } from '@apollo/client/core'
 
 interface Species {
   name: string
@@ -17,6 +17,11 @@ interface QueryResult {
 }
 
 const endpoint = 'https://beta.pokeapi.co/graphql/v1beta'
+
+const client = new ApolloClient({
+  uri: endpoint,
+  cache: new InMemoryCache(),
+})
 
 const query = gql`
   query bigPokeAPIquery {
@@ -101,9 +106,8 @@ export function setupFetchPokemons(
     console.time('fetchPokemons')
     output.textContent = 'Fetching...'
     try {
-      const data = await request<QueryResult>({
-        url: endpoint,
-        document: query,
+      const { data } = await client.query<QueryResult>({
+        query,
       })
       console.timeEnd('fetchPokemons')
       species = data.gen3_species
