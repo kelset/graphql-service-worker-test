@@ -6,8 +6,10 @@ import { setupFetchPokemons } from './fetchPokemons.ts'
 if ('serviceWorker' in navigator) {
   try {
     const registration = await navigator.serviceWorker.register(
-      new URL('./graphql-sw.ts', import.meta.url),
-      { type: 'module' },
+      '/graphql-sw.js',
+      {
+        type: 'module',
+      },
     )
     if (registration.installing) {
           console.log("Service worker installing");

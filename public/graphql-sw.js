@@ -4,14 +4,22 @@ import { request } from 'graffle'
 
 const endpoint = 'https://beta.pokeapi.co/graphql/v1beta'
 
-self.addEventListener('message', (event: any) => {
+self.addEventListener('install', () => {
+  self.skipWaiting()
+})
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(self.clients.claim())
+})
+
+self.addEventListener('message', (event) => {
   const data = event.data
   console.log('[sw] message received', data)
   if (!data || data.type !== 'GRAPHQL_FETCH') return
   event.waitUntil(handleGraphQL(event))
 })
 
-async function handleGraphQL(event: ExtendableMessageEvent) {
+async function handleGraphQL(event) {
   const { query, variables } = event.data
   console.log('[sw] handleGraphQL', { query, variables })
   try {
