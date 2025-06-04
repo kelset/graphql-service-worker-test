@@ -13,6 +13,6 @@ export function setupHeavyTask(button: HTMLButtonElement, output: HTMLElement) {
 
   button.addEventListener('click', () => {
     console.time('heavyTask')
-    worker.postMessage({ count: 100000000 })
+    worker.postMessage({ count: 2000000000 })
   })
 }
