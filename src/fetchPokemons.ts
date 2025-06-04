@@ -13,18 +13,39 @@ interface Generation {
 interface QueryResult {
   gen3_species: Species[]
   generations: Generation[]
+  [key: string]: unknown
 }
 
 const endpoint = 'https://beta.pokeapi.co/graphql/v1beta'
 
 const query = gql`
-  query samplePokeAPIquery {
+  query bigPokeAPIquery {
     gen3_species: pokemon_v2_pokemonspecies(
       where: { pokemon_v2_generation: { name: { _eq: "generation-iii" } } }
       order_by: { id: asc }
     ) {
       name
       id
+      pokemon: pokemon_v2_pokemons(limit: 1) {
+        height
+        weight
+        stats: pokemon_v2_pokemonstats {
+          base_stat
+          pokemon_v2_stat {
+            name
+          }
+        }
+        abilities: pokemon_v2_pokemonabilities(limit: 2) {
+          pokemon_v2_ability {
+            name
+          }
+        }
+        moves: pokemon_v2_pokemonmoves(limit: 5) {
+          pokemon_v2_move {
+            name
+          }
+        }
+      }
     }
     generations: pokemon_v2_generation {
       name
