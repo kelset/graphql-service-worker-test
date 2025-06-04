@@ -97,6 +97,7 @@ export function setupFetchPokemons(
   })
 
   button.addEventListener('click', async () => {
+    console.log('Firing GraphQL query for Pokémon data')
     console.time('fetchPokemons')
     output.textContent = 'Fetching...'
     try {

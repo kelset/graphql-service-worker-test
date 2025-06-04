@@ -37,3 +37,10 @@ setupFetchPokemons(
   document.querySelector<HTMLSpanElement>('#fetch-result')!,
   document.querySelector<HTMLDivElement>('#carousel')!
 )
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker
+    .register('/sw.js')
+    .then(() => console.log('Service Worker registered'))
+    .catch((err) => console.error('Service Worker registration failed:', err));
+}
