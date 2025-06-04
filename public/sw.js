@@ -1,6 +1,16 @@
 const CACHE_NAME = 'graphql-cache-v1';
 const GRAPHQL_ENDPOINT = 'https://beta.pokeapi.co/graphql/v1beta';
 
+self.addEventListener('install', (event) => {
+  console.log('[Service Worker] Installed');
+  self.skipWaiting();
+});
+
+self.addEventListener('activate', (event) => {
+  console.log('[Service Worker] Activated');
+  event.waitUntil(self.clients.claim());
+});
+
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   if (request.method === 'POST' && request.url === GRAPHQL_ENDPOINT) {
