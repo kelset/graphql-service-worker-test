@@ -1,10 +1,12 @@
-export function setupHeavyTask(element: HTMLButtonElement) {
-  element.innerHTML = 'Compute sum';
-  element.addEventListener('click', () => {
+export function setupHeavyTask(button: HTMLButtonElement, output: HTMLElement) {
+  button.textContent = 'Compute sum';
+  button.addEventListener('click', () => {
+    console.time('heavyTask');
     let sum = 0;
-    for (let i = 1; i <= 1000000000; i++) {
+    for (let i = 1; i <= 100000000; i++) {
       sum += i;
     }
-    element.innerHTML = `sum is ${sum}`;
+    output.textContent = `sum is ${sum}`;
+    console.timeEnd('heavyTask');
   });
 }
