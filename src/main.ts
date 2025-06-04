@@ -3,7 +3,7 @@ import typescriptLogo from './typescript.svg'
 import viteLogo from '/vite.svg'
 import { setupCounter } from './counter.ts'
 import { setupHeavyTask } from './heavyTask.ts'
-import { setupFetchPlaceholder } from './fetchPlaceholder.ts'
+import { setupFetchPokemons } from './fetchPokemons.ts'
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <div>
@@ -27,4 +27,4 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 
 setupCounter(document.querySelector<HTMLButtonElement>('#counter')!)
 setupHeavyTask(document.querySelector<HTMLButtonElement>('#heavy')!)
-setupFetchPlaceholder(document.querySelector<HTMLButtonElement>('#fetch')!)
+setupFetchPokemons(document.querySelector<HTMLButtonElement>('#fetch')!)
