@@ -16,6 +16,9 @@ if ('serviceWorker' in navigator) {
         } else if (registration.active) {
           console.log("Service worker active");
         }
+    navigator.serviceWorker.ready.then((r) => {
+      console.log('Service worker ready', r.active)
+    })
   } catch (error) {
     console.error(`Registration failed with ${error}`);
   }
