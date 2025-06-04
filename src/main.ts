@@ -4,24 +4,28 @@ import { setupHeavyTask } from './heavyTask.ts'
 import { setupFetchPokemons } from './fetchPokemons.ts'
 
 if ('serviceWorker' in navigator) {
-  try {
-    const registration = await navigator.serviceWorker.register(
-      new URL('./graphql-sw.ts', import.meta.url),
-      { type: 'module' },
-    )
-    if (registration.installing) {
-          console.log("Service worker installing");
-        } else if (registration.waiting) {
-          console.log("Service worker installed");
-        } else if (registration.active) {
-          console.log("Service worker active");
-        }
-    navigator.serviceWorker.ready.then((r) => {
-      console.log('Service worker ready', r.active)
-    })
-  } catch (error) {
-    console.error(`Registration failed with ${error}`);
-  }
+  (async () => {
+    try {
+      const registration = await navigator.serviceWorker.register(
+        '/graphql-sw.js',
+        {
+          type: 'module',
+        },
+      )
+      if (registration.installing) {
+            console.log("Service worker installing");
+          } else if (registration.waiting) {
+            console.log("Service worker installed");
+          } else if (registration.active) {
+            console.log("Service worker active");
+          }
+      navigator.serviceWorker.ready.then((r) => {
+        console.log('Service worker ready', r.active)
+      })
+    } catch (error) {
+      console.error(`Registration failed with ${error}`);
+    }
+  })()
 }
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `

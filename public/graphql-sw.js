@@ -1,17 +1,40 @@
 /// <reference lib="webworker" />
 
-import { request } from 'graffle'
+async function request(endpoint, query, variables) {
+  const res = await fetch(endpoint, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ query, variables }),
+  })
+  if (!res.ok) {
+    throw new Error(`HTTP ${res.status}`)
+  }
+  const json = await res.json()
+  if (json.errors) {
+    const message = json.errors[0]?.message || 'GraphQL error'
+    throw new Error(message)
+  }
+  return json.data
+}
 
 const endpoint = 'https://beta.pokeapi.co/graphql/v1beta'
 
-self.addEventListener('message', (event: any) => {
+self.addEventListener('install', () => {
+  self.skipWaiting()
+})
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(self.clients.claim())
+})
+
+self.addEventListener('message', (event) => {
   const data = event.data
   console.log('[sw] message received', data)
   if (!data || data.type !== 'GRAPHQL_FETCH') return
   event.waitUntil(handleGraphQL(event))
 })
 
-async function handleGraphQL(event: ExtendableMessageEvent) {
+async function handleGraphQL(event) {
   const { query, variables } = event.data
   console.log('[sw] handleGraphQL', { query, variables })
   try {
