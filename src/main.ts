@@ -3,6 +3,13 @@ import { setupCounter } from './counter.ts'
 import { setupHeavyTask } from './heavyTask.ts'
 import { setupFetchPokemons } from './fetchPokemons.ts'
 
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register(
+    new URL('./graphql-sw.ts', import.meta.url),
+    { type: 'module' },
+  )
+}
+
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <h1>GraphQL Service Worker Test</h1>
   <div class="control">
