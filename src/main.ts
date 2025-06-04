@@ -32,8 +32,11 @@ setupHeavyTask(
   document.querySelector<HTMLButtonElement>('#heavy')!,
   document.querySelector<HTMLSpanElement>('#heavy-result')!
 )
+const fetchButton = document.querySelector<HTMLButtonElement>('#fetch')!
+fetchButton.disabled = true
+
 setupFetchPokemons(
-  document.querySelector<HTMLButtonElement>('#fetch')!,
+  fetchButton,
   document.querySelector<HTMLSpanElement>('#fetch-result')!,
   document.querySelector<HTMLDivElement>('#carousel')!
 )
@@ -41,6 +44,18 @@ setupFetchPokemons(
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker
     .register('/sw.js')
-    .then(() => console.log('Service Worker registered'))
-    .catch((err) => console.error('Service Worker registration failed:', err));
+    .then(() => {
+      console.log('Service Worker registered')
+      return navigator.serviceWorker.ready
+    })
+    .then(() => {
+      console.log('Service Worker ready')
+      fetchButton.disabled = false
+    })
+    .catch((err) => {
+      console.error('Service Worker registration failed:', err)
+      fetchButton.disabled = false
+    })
+} else {
+  fetchButton.disabled = false
 }
