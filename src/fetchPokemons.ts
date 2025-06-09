@@ -58,15 +58,26 @@ export function setupFetchPokemons(
 
   worker.addEventListener(
     'message',
-    (event: MessageEvent<{ data?: QueryResult; error?: string }>) => {
+    async (event: MessageEvent<{ key?: string; error?: string }>) => {
       console.log('Main thread: received message from worker', event.data)
-      const { data, error } = event.data
-      if (error || !data) {
+      const { key, error } = event.data
+      if (error || !key) {
         output.textContent = 'Error fetching data'
         console.error(error)
         console.timeEnd('fetchPokemons')
         return
       }
+      console.log('Main thread: reading data from cache with key', key)
+      const cache = await caches.open('graphql-cache')
+      const response = await cache.match(key)
+      if (!response) {
+        output.textContent = 'Error reading cached data'
+        console.error('Main thread: cache miss')
+        console.timeEnd('fetchPokemons')
+        return
+      }
+      const data = (await response.json()) as QueryResult
+      console.log('Main thread: data read from cache')
       console.timeEnd('fetchPokemons')
       species = data.gen3_species
       total = species.length
