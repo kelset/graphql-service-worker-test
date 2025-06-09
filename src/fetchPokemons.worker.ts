@@ -68,8 +68,12 @@ self.onmessage = async () => {
       url: endpoint,
       document: query,
     })
-    console.log('Worker: posting fetched data')
-    self.postMessage({ data })
+    const key = `pokemon-${Date.now()}`
+    console.log('Worker: caching fetched data with key', key)
+    const cache = await caches.open('graphql-cache')
+    await cache.put(key, new Response(JSON.stringify(data)))
+    console.log('Worker: posting cache key to main thread')
+    self.postMessage({ key })
   } catch (err) {
     console.error('Worker: error fetching data', err)
     self.postMessage({ error: (err as Error).message })
