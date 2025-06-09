@@ -75,5 +75,3 @@ self.onmessage = async () => {
     self.postMessage({ error: (err as Error).message })
   }
 }
-
-export default null as any
