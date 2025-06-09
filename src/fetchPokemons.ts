@@ -69,7 +69,7 @@ export function setupFetchPokemons(
       }
       console.log('Main thread: reading data from cache with key', key)
       const cache = await caches.open('graphql-cache')
-      const response = await cache.match(key)
+      const response = await cache.match(`/${key}`)
       if (!response) {
         output.textContent = 'Error reading cached data'
         console.error('Main thread: cache miss')

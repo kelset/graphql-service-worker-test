@@ -71,7 +71,7 @@ self.onmessage = async () => {
     const key = `pokemon-${Date.now()}`
     console.log('Worker: caching fetched data with key', key)
     const cache = await caches.open('graphql-cache')
-    await cache.put(key, new Response(JSON.stringify(data)))
+    await cache.put(`/${key}`, new Response(JSON.stringify(data)))
     console.log('Worker: posting cache key to main thread')
     self.postMessage({ key })
   } catch (err) {
