@@ -1,4 +1,6 @@
-import { gql, request } from 'graffle'
+const worker = new Worker(new URL('./fetchPokemons.worker.ts', import.meta.url), {
+  type: 'module',
+})
 
 interface Species {
   name: string
@@ -15,48 +17,6 @@ interface QueryResult {
   generations: Generation[]
   [key: string]: unknown
 }
-
-const endpoint = 'https://beta.pokeapi.co/graphql/v1beta'
-
-const query = gql`
-  query bigPokeAPIquery {
-    gen3_species: pokemon_v2_pokemonspecies(
-      where: { pokemon_v2_generation: { name: { _eq: "generation-iii" } } }
-      order_by: { id: asc }
-    ) {
-      name
-      id
-      pokemon: pokemon_v2_pokemons(limit: 1) {
-        height
-        weight
-        stats: pokemon_v2_pokemonstats {
-          base_stat
-          pokemon_v2_stat {
-            name
-          }
-        }
-        abilities: pokemon_v2_pokemonabilities(limit: 2) {
-          pokemon_v2_ability {
-            name
-          }
-        }
-        moves: pokemon_v2_pokemonmoves(limit: 5) {
-          pokemon_v2_move {
-            name
-          }
-        }
-      }
-    }
-    generations: pokemon_v2_generation {
-      name
-      pokemon_species: pokemon_v2_pokemonspecies_aggregate {
-        aggregate {
-          count
-        }
-      }
-    }
-  }
-`
 
 export function setupFetchPokemons(
   button: HTMLButtonElement,
@@ -96,14 +56,28 @@ export function setupFetchPokemons(
     render()
   })
 
-  button.addEventListener('click', async () => {
-    console.time('fetchPokemons')
-    output.textContent = 'Fetching...'
-    try {
-      const data = await request<QueryResult>({
-        url: endpoint,
-        document: query,
-      })
+  worker.addEventListener(
+    'message',
+    async (event: MessageEvent<{ key?: string; error?: string }>) => {
+      console.log('Main thread: received message from worker', event.data)
+      const { key, error } = event.data
+      if (error || !key) {
+        output.textContent = 'Error fetching data'
+        console.error(error)
+        console.timeEnd('fetchPokemons')
+        return
+      }
+      console.log('Main thread: reading data from cache with key', key)
+      const cache = await caches.open('graphql-cache')
+      const response = await cache.match(`/${key}`)
+      if (!response) {
+        output.textContent = 'Error reading cached data'
+        console.error('Main thread: cache miss')
+        console.timeEnd('fetchPokemons')
+        return
+      }
+      const data = (await response.json()) as QueryResult
+      console.log('Main thread: data read from cache')
       console.timeEnd('fetchPokemons')
       species = data.gen3_species
       total = species.length
@@ -113,10 +87,13 @@ export function setupFetchPokemons(
         carousel.style.display = 'flex'
         render()
       }
-    } catch (err) {
-      output.textContent = 'Error fetching data'
-      console.error(err)
-      console.timeEnd('fetchPokemons')
     }
+  )
+
+  button.addEventListener('click', () => {
+    console.time('fetchPokemons')
+    output.textContent = 'Fetching...'
+    console.log('Main thread: sending fetch command to worker')
+    worker.postMessage('fetch')
   })
 }
