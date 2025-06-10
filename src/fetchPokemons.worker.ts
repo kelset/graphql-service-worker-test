@@ -1,6 +1,7 @@
 /// <reference lib="webworker" />
 
-import { gql, request } from 'graffle'
+import { ApolloClient, InMemoryCache, gql } from '@apollo/client/core'
+import { createHttpLink } from '@apollo/client/link/http'
 
 interface Species {
   name: string
@@ -19,6 +20,11 @@ interface QueryResult {
 }
 
 const endpoint = 'https://beta.pokeapi.co/graphql/v1beta'
+
+const client = new ApolloClient({
+  link: createHttpLink({ uri: endpoint, fetch }),
+  cache: new InMemoryCache(),
+})
 
 const query = gql`
   query bigPokeAPIquery {
@@ -64,9 +70,8 @@ self.onmessage = async () => {
   console.log('Worker: received fetch command')
   console.log('Worker: fetching data...')
   try {
-    const data = await request<QueryResult>({
-      url: endpoint,
-      document: query,
+    const { data } = await client.query<QueryResult>({
+      query,
     })
     const key = `pokemon-${Date.now()}`
     console.log('Worker: caching fetched data with key', key)
@@ -79,3 +84,4 @@ self.onmessage = async () => {
     self.postMessage({ error: (err as Error).message })
   }
 }
+
