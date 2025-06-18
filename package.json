@@ -4,14 +4,21 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "webpack serve --mode development --open",
-    "build": "webpack --mode production",
-    "preview": "webpack serve --mode production --open"
+    "dev": "webpack --config packages/webapp/webpack.config.js serve --mode development --open",
+    "build": "webpack --config packages/webapp/webpack.config.js --mode production",
+    "preview": "webpack --config packages/webapp/webpack.config.js serve --mode production --open"
   },
   "devDependencies": {
+    "@nx/js": "^21.2.0",
+    "@nx/web": "^21.2.0",
+    "@nx/webpack": "^21.2.0",
+    "@swc-node/register": "^1.10.10",
+    "@swc/core": "^1.12.1",
+    "@swc/helpers": "^0.5.17",
     "copy-webpack-plugin": "^13.0.0",
     "css-loader": "^7.1.2",
     "html-webpack-plugin": "^5.6.3",
+    "nx": "21.2.0",
     "style-loader": "^4.0.0",
     "ts-loader": "^9.5.2",
     "typescript": "~5.8.3",
@@ -22,5 +29,6 @@
   "dependencies": {
     "@apollo/client": "^3.13.8",
     "graphql": "^16.11.0"
-  }
+  },
+  "nx": {}
 }
