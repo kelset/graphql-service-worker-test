@@ -1,7 +1,7 @@
 import './style.css'
-import { setupCounter } from './counter.ts'
-import { setupHeavyTask } from './heavyTask.ts'
-import { setupFetchPokemons } from './fetchPokemons.ts'
+import { setupCounter } from './counter'
+import { setupHeavyTask } from './heavyTask'
+import { setupFetchPokemons } from './fetchPokemons'
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <h1>GraphQL Service Worker Test</h1>
