@@ -1,5 +1,7 @@
 /// <reference lib="webworker" />
 
+declare const caches: CacheStorage;
+
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client/core'
 import { createHttpLink } from '@apollo/client/link/http'
 
