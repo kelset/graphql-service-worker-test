@@ -1,6 +1,6 @@
 /// <reference lib="webworker" />
 
-declare const caches: CacheStorage;
+import { storeData } from './db'
 
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client/core'
 import { createHttpLink } from '@apollo/client/link/http'
@@ -76,9 +76,8 @@ self.onmessage = async () => {
       query,
     })
     const key = `pokemon-${Date.now()}`
-    console.log('Worker: caching fetched data with key', key)
-    const cache = await caches.open('graphql-cache')
-    await cache.put(`/${key}`, new Response(JSON.stringify(data)))
+    console.log('Worker: storing fetched data with key', key)
+    await storeData(key, data)
     console.log('Worker: posting cache key to main thread')
     self.postMessage({ key })
   } catch (err) {

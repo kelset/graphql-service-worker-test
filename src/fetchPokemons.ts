@@ -1,3 +1,5 @@
+import { readData } from './db'
+
 const worker = new Worker(new URL('./fetchPokemons.worker.ts', import.meta.url), {
   type: 'module',
 })
@@ -67,17 +69,15 @@ export function setupFetchPokemons(
         console.timeEnd('fetchPokemons')
         return
       }
-      console.log('Main thread: reading data from cache with key', key)
-      const cache = await caches.open('graphql-cache')
-      const response = await cache.match(`/${key}`)
-      if (!response) {
-        output.textContent = 'Error reading cached data'
-        console.error('Main thread: cache miss')
+      console.log('Main thread: reading data from DB with key', key)
+      const data = await readData<QueryResult>(key)
+      if (!data) {
+        output.textContent = 'Error reading stored data'
+        console.error('Main thread: data not found')
         console.timeEnd('fetchPokemons')
         return
       }
-      const data = (await response.json()) as QueryResult
-      console.log('Main thread: data read from cache')
+      console.log('Main thread: data read from DB')
       console.timeEnd('fetchPokemons')
       species = data.gen3_species
       total = species.length
