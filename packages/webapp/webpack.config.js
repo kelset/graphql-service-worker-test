@@ -6,7 +6,7 @@ export default {
   entry: './src/main.ts',
   output: {
     filename: 'bundle.js',
-    path: path.resolve('dist'),
+    path: path.resolve('../../dist/packages/webapp'),
     clean: true,
   },
   resolve: {
@@ -37,7 +37,7 @@ export default {
     }),
   ],
   devServer: {
-    static: './dist',
+    static: '../../dist/packages/webapp',
     hot: true,
   },
 };
